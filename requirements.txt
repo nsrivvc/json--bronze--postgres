@@ -1,0 +1,6 @@
+# Core ingestion dependencies
+psycopg[binary]>=3.1,<4.0      # Postgres / Neon driver (psycopg 3)
+python-dotenv>=1.0,<2.0        # loads .env for local runs (optional at runtime)
+
+# --- Add later when migrating to Azure SQL ---
+# pyodbc>=5.0,<6.0             # Azure SQL Database driver (needs MS ODBC Driver 18)

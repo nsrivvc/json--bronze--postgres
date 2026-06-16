@@ -1,0 +1,40 @@
+name: bronze-ingest
+
+# Mirrors "GitHub Actions Workflow 1 (JSON Ingestion -> Bronze)" from the
+# architecture diagram. Runs on a schedule and on manual dispatch.
+on:
+  workflow_dispatch:
+    inputs:
+      file:
+        description: "Path to the NatGasHub JSON file to ingest"
+        required: true
+        default: "data/sample_natgashub_contract.json"
+  schedule:
+    - cron: "0 * * * *"   # hourly; adjust to your posting cadence
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      # In a real run, an earlier step would fetch the NatGasHub JSON from the
+      # API and write it into data/ (using the API key secret). Here we ingest
+      # whatever file the dispatch input points at.
+      - name: Run Bronze ingestion
+        env:
+          DB_TYPE: postgres
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}   # Neon connection string
+          SOURCE_SYSTEM: NatGasHub
+          TRIGGERED_BY: github-actions
+        run: |
+          python -m src.main \
+            --file "${{ github.event.inputs.file || 'data/sample_natgashub_contract.json' }}" \
+            --create-tables
