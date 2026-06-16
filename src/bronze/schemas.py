@@ -208,7 +208,7 @@ def _q(identifier: str) -> str:
 
 def generate_table_ddl(table: str) -> str:
     lines = [f"CREATE TABLE IF NOT EXISTS {SCHEMA_NAME}.{_q(table)} ("]
-    col_lines = ["    id BIGSERIAL PRIMARY KEY,"]
+    col_lines = ["    bronze_row_id BIGSERIAL PRIMARY KEY,"]
 
     for src, declared in BUSINESS_COLUMNS[table]:
         col_lines.append(f"    {_q(src.lower()):<28} TEXT,            -- source type: {declared}")
