@@ -65,51 +65,6 @@ pipeline_accelerator_bronze/
 └── README.md
 ```
 
----
-
-## Run it locally
-
-1. **Create a virtualenv and install deps**
-
-   ```bash
-   python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
-   pip install -r requirements.txt
-   ```
-
-2. **Configure the connection** — copy `.env.example` to `.env` and paste your
-   Neon connection string into `DATABASE_URL` (Neon console → Connection
-   Details). Keep `sslmode=require`.
-
-3. **Dry run first** (no database needed — parses, validates, routes, and
-   transforms, printing what *would* be written):
-
-   ```bash
-   python -m src.main --file data/sample_natgashub_contract.json --dry-run
-   ```
-
-4. **Create tables and load** into Neon:
-
-   ```bash
-   python -m src.main --file data/sample_natgashub_contract.json --create-tables
-   ```
-
-   `--create-tables` runs the DDL with `CREATE ... IF NOT EXISTS`, so it is safe
-   to pass on every run. Drop it once the schema exists.
-
-You can also apply the schema manually with any SQL client (DBeaver/pgAdmin):
-
-```bash
-psql "$DATABASE_URL" -f sql/create_bronze_tables.sql
-```
-
-The DDL is generated from `src/bronze/schemas.py`; regenerate with:
-
-```bash
-python -m src.bronze.schemas > sql/create_bronze_tables.sql
-```
-
----
-
 ## Idempotency / duplicate loads
 
 Each row gets a `hash_key` = SHA-256 over its **business** field values (metadata
